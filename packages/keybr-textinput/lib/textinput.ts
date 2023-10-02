@@ -20,6 +20,7 @@ export class TextInput {
   public readonly codePoints: readonly number[];
   public readonly stopOnError: boolean;
   public readonly forgiveErrors: boolean;
+  public readonly spaceSkipsWords: boolean;
   public readonly recoverSequenceLength: number;
   public readonly garbageSequenceLength: number;
   private readonly onStep: StepListener;
@@ -30,13 +31,14 @@ export class TextInput {
 
   constructor(
     text: string,
-    { stopOnError, forgiveErrors }: TextInputSettings,
+    { stopOnError, forgiveErrors, spaceSkipsWords }: TextInputSettings,
     onStep: StepListener = () => {},
   ) {
     this.text = text; // TODO Normalize?
     this.codePoints = [...toCodePoints(text)];
     this.stopOnError = stopOnError;
     this.forgiveErrors = forgiveErrors;
+    this.spaceSkipsWords = spaceSkipsWords;
     this.recoverSequenceLength = 3;
     this.garbageSequenceLength = 10;
     this.onStep = onStep;
@@ -67,7 +69,7 @@ export class TextInput {
       this.steps.length === 0 &&
       this.garbage.length === 0 &&
       !this.typo &&
-      codePoint <= 0x20
+      codePoint <= 0x0020
     ) {
       return Feedback.Succeeded;
     }
@@ -75,13 +77,17 @@ export class TextInput {
     this.inputEvents.push({ codePoint, timeStamp });
 
     // Handle the delete key.
-    if (codePoint === 0x08) {
+    if (codePoint === 0x0008) {
       if (this.garbage.length > 0) {
         this.garbage.pop();
         return Feedback.Succeeded;
       } else {
         return Feedback.Failed;
       }
+    }
+
+    if (codePoint === 0x0020 && this.spaceSkipsWords) {
+      this.garbage = [];
     }
 
     // Handle input.

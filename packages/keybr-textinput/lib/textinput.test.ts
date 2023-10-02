@@ -26,6 +26,7 @@ test("allow empty text", (t) => {
     new TextInput("", {
       stopOnError: true,
       forgiveErrors: true,
+      spaceSkipsWords: true,
     });
   });
 });
@@ -34,6 +35,7 @@ test("cannot advance past the end of text", (t) => {
   const textInput = new TextInput("", {
     stopOnError: true,
     forgiveErrors: true,
+    spaceSkipsWords: true,
   });
 
   t.true(textInput.completed);
@@ -47,6 +49,7 @@ test("advance to completion", (t) => {
   const textInput = new TextInput("text", {
     stopOnError: true,
     forgiveErrors: true,
+    spaceSkipsWords: true,
   });
 
   // Initial state.
@@ -88,6 +91,7 @@ test("accumulate and delete garbage", (t) => {
   const textInput = new TextInput("text", {
     stopOnError: false,
     forgiveErrors: false,
+    spaceSkipsWords: true,
   });
 
   // Initial state.
@@ -164,6 +168,7 @@ test("emoji", (t) => {
   const textInput = new TextInput("🍬🍭", {
     stopOnError: true,
     forgiveErrors: true,
+    spaceSkipsWords: true,
   });
 
   t.is(stepsString(textInput.getSteps()), "");
@@ -185,6 +190,7 @@ test("handle backspace at the start of text", (t) => {
   const textInput = new TextInput("abc", {
     stopOnError: false,
     forgiveErrors: false,
+    spaceSkipsWords: true,
   });
 
   // Step 1.
@@ -220,6 +226,7 @@ test("handle backspace in the middle of text", (t) => {
   const textInput = new TextInput("abc", {
     stopOnError: false,
     forgiveErrors: false,
+    spaceSkipsWords: true,
   });
 
   // Step 1.
@@ -262,6 +269,7 @@ test("limit garbage length", (t) => {
   const textInput = new TextInput("abc", {
     stopOnError: false,
     forgiveErrors: false,
+    spaceSkipsWords: true,
   });
 
   for (let i = 1; i <= 100; i++) {
@@ -280,6 +288,7 @@ test("forgive an inserted character", (t) => {
   const textInput = new TextInput("abc", {
     stopOnError: true,
     forgiveErrors: true,
+    spaceSkipsWords: true,
   });
 
   // Initial state.
@@ -321,6 +330,7 @@ test("forgive a skipped character", (t) => {
   const textInput = new TextInput("abcd", {
     stopOnError: true,
     forgiveErrors: true,
+    spaceSkipsWords: true,
   });
 
   // Step 1.
@@ -349,6 +359,7 @@ test("forgive a replaced character", (t) => {
   const textInput = new TextInput("abcd", {
     stopOnError: true,
     forgiveErrors: true,
+    spaceSkipsWords: true,
   });
 
   // Step 1.
@@ -384,6 +395,7 @@ test("recover from a forgiven error", (t) => {
   const textInput = new TextInput("abcde", {
     stopOnError: true,
     forgiveErrors: true,
+    spaceSkipsWords: true,
   });
 
   textInput.step(X, 100);
@@ -401,6 +413,7 @@ test("ignore whitespace keys at the start of text", (t) => {
   const textInput = new TextInput("text", {
     stopOnError: true,
     forgiveErrors: false,
+    spaceSkipsWords: true,
   });
 
   t.is(textInput.step(0x0a, 100), Feedback.Succeeded);
@@ -419,6 +432,7 @@ test("normalize characters", (t) => {
     const textInput = new TextInput("a ", {
       stopOnError: true,
       forgiveErrors: false,
+      spaceSkipsWords: true,
     });
 
     t.is(textInput.step(A, 100), Feedback.Succeeded);
@@ -432,6 +446,7 @@ test("normalize characters", (t) => {
     const textInput = new TextInput("a ", {
       stopOnError: true,
       forgiveErrors: false,
+      spaceSkipsWords: true,
     });
 
     t.is(textInput.step(A, 100), Feedback.Succeeded);
@@ -445,6 +460,7 @@ test("normalize characters", (t) => {
     const textInput = new TextInput("a ", {
       stopOnError: true,
       forgiveErrors: false,
+      spaceSkipsWords: true,
     });
 
     t.is(textInput.step(A, 100), Feedback.Succeeded);
@@ -458,6 +474,7 @@ test("normalize characters", (t) => {
     const textInput = new TextInput("«a»", {
       stopOnError: true,
       forgiveErrors: false,
+      spaceSkipsWords: true,
     });
 
     t.is(textInput.step(0x0022, 100), Feedback.Succeeded);
