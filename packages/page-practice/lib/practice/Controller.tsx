@@ -1,7 +1,7 @@
 import { keyboardProps, useKeyboard } from "@keybr/keyboard";
 import { useSettings } from "@keybr/settings";
 import { playSound } from "@keybr/sound";
-import { Feedback, textDisplayProps } from "@keybr/textinput";
+import { Feedback, PlaySounds, textDisplayProps } from "@keybr/textinput";
 import { emulateLayout } from "@keybr/textinput-events";
 import { TextInputSound } from "@keybr/textinput-sounds";
 import {
@@ -73,7 +73,7 @@ function usePracticeState(state: PracticeState) {
           setLines(state.lines);
           playFeedbackSound(
             feedback,
-            settings.get(textDisplayProps.enableSoundStyle),
+            settings.get(textDisplayProps.playSounds),
           );
         },
       },
@@ -91,26 +91,28 @@ function usePracticeState(state: PracticeState) {
         ["Escape", handleReset],
       ),
     };
-  }, [state, keyboard]);
+  }, [state, keyboard, settings]);
 }
 
-function playFeedbackSound(feedback: Feedback, option: number): void {
-  if (option === 1) {
-    switch (feedback) {
-      case Feedback.Succeeded:
-        playSound(TextInputSound.Click);
-        break;
-      case Feedback.Recovered:
-        playSound(TextInputSound.Click);
-        break;
-      case Feedback.Failed:
+function playFeedbackSound(feedback: Feedback, option: PlaySounds): void {
+  switch (option) {
+    case PlaySounds.All:
+      switch (feedback) {
+        case Feedback.Succeeded:
+        case Feedback.Recovered:
+          playSound(TextInputSound.Click);
+          break;
+        case Feedback.Failed:
+          playSound(TextInputSound.Blip);
+          break;
+      }
+      break;
+    case PlaySounds.ErrorsOnly:
+      if (feedback === Feedback.Failed) {
         playSound(TextInputSound.Blip);
-        break;
-    }
-  } else {
-    switch (feedback) {
-      case Feedback.Failed:
-        playSound(TextInputSound.Blip);
-    }
+      }
+      break;
+    case PlaySounds.None:
+      break;
   }
 }

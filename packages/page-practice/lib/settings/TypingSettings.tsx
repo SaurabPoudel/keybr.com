@@ -2,7 +2,7 @@ import { useSettings } from "@keybr/settings";
 import {
   CaretMovementStyle,
   CaretShapeStyle,
-  EnableSoundStyle,
+  PlaySounds,
   textDisplayProps,
   textInputProps,
   WhitespaceStyle,
@@ -321,38 +321,26 @@ function CursorMovementProp(): ReactNode {
 }
 
 function SoundsProp(): ReactNode {
-  const { formatMessage } = useIntl();
   const { settings, updateSettings } = useSettings();
   return (
     <FieldList>
       <Field className={styleSizeWide}>
-        <CheckBox
-          label={formatMessage({
-            id: "settings.enableSoundsLabel",
-            description: "Input field label.",
-            defaultMessage: "Enable sounds",
-          })}
-          checked={settings.get(textDisplayProps.sounds)}
-          onChange={(value) => {
-            updateSettings(settings.set(textDisplayProps.sounds, value));
-          }}
+        <FormattedMessage
+          id="settings.playSoundsLabel"
+          description="Input field Label"
+          defaultMessage="Play sounds"
         />
       </Field>
-
       <Field>
         <RadioBox
-          label="All Sounds"
-          name="enable-sound-style"
+          label="Be Silent"
+          name="play-sounds"
           checked={
-            settings.get(textDisplayProps.enableSoundStyle) ===
-            EnableSoundStyle.All
+            settings.get(textDisplayProps.playSounds) === PlaySounds.None
           }
-          onChange={() => {
+          onSelect={() => {
             updateSettings(
-              settings.set(
-                textDisplayProps.enableSoundStyle,
-                EnableSoundStyle.All,
-              ),
+              settings.set(textDisplayProps.playSounds, PlaySounds.None),
             );
           }}
         />
@@ -360,18 +348,26 @@ function SoundsProp(): ReactNode {
 
       <Field>
         <RadioBox
-          label="Only Errors"
-          name="enable-sounds-style"
+          label="Error Sounds Only"
+          name="play-sounds"
           checked={
-            settings.get(textDisplayProps.enableSoundStyle) ===
-            EnableSoundStyle.Error
+            settings.get(textDisplayProps.playSounds) === PlaySounds.ErrorsOnly
           }
           onChange={() => {
             updateSettings(
-              settings.set(
-                textDisplayProps.enableSoundStyle,
-                EnableSoundStyle.Error,
-              ),
+              settings.set(textDisplayProps.playSounds, PlaySounds.ErrorsOnly),
+            );
+          }}
+        />
+      </Field>
+      <Field>
+        <RadioBox
+          label="All Sounds"
+          name="play-sounds"
+          checked={settings.get(textDisplayProps.playSounds) === PlaySounds.All}
+          onChange={() => {
+            updateSettings(
+              settings.set(textDisplayProps.playSounds, PlaySounds.All),
             );
           }}
         />

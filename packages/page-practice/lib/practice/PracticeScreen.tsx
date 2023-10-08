@@ -4,9 +4,9 @@ import { LessonLoader } from "@keybr/lesson-loader";
 import { ResultGroups, useResults } from "@keybr/result";
 import { type Settings, useSettings } from "@keybr/settings";
 import { enableSounds, loadSounds } from "@keybr/sound";
-import { textDisplayProps } from "@keybr/textinput";
+import { PlaySounds, textDisplayProps } from "@keybr/textinput";
 import { TextInputSound, textInputSounds } from "@keybr/textinput-sounds";
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode, useCallback, useEffect, useRef } from "react";
 import { Controller } from "./Controller.tsx";
 import {
   type LastLesson,
@@ -49,19 +49,19 @@ function ResultUpdater({
   const { results, appendResults } = useResults();
   const lastLesson = useRef<LastLesson | null>(null);
   const soundOptions = soundStyleOption(
-    settings.get(textDisplayProps.enableSoundStyle),
+    settings.get(textDisplayProps.playSounds),
   );
-  const handleEnableSounds = () => {
+  const handleEnableSounds = useCallback(() => {
     if (soundOptions) {
       loadSounds(soundOptions);
-      const soundSettings = settings.get(textDisplayProps.sounds);
-      enableSounds(soundSettings);
+      enableSounds(Boolean(settings.get(textDisplayProps.playSounds)));
     }
-  };
+  }, [settings, soundOptions]);
 
   useEffect(() => {
     handleEnableSounds();
-  }, [settings]);
+  }, [handleEnableSounds, settings]);
+
   const group = ResultGroups.byLayoutFamily(results).get(
     settings.get(keyboardProps.layout).family,
   );
@@ -78,9 +78,9 @@ function ResultUpdater({
 }
 const soundStyleOption = (options: number) => {
   switch (options) {
-    case 1:
+    case PlaySounds.All:
       return textInputSounds;
-    case 2:
+    case PlaySounds.ErrorsOnly:
       return {
         [TextInputSound.Blip]: textInputSounds[TextInputSound.Blip],
       };
